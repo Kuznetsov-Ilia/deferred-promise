@@ -1,0 +1,27 @@
+{
+  "name": "deferred-promise",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "jsnext:main": "src.js",
+  "files": [ "index.js", "src.js" ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "rollup -i src.js -f cjs -o index.js",
+    "deploy": "git add . && git commit -am 'fix' && git push && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QiV/deferred-promise.git"
+  },
+  "devDependencies": {
+    "rollup": "*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/QiV/deferred-promise/issues"
+  },
+  "homepage": "https://github.com/QiV/deferred-promise#readme"
+}
