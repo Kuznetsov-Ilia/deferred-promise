@@ -1,13 +1,13 @@
 {
   "name": "deferred-promise",
-  "version": "2.0.0",
+  "version": "3.0.1",
   "description": "",
   "main": "index.js",
-  "jsnext:main": "src.js",
-  "files": [ "index.js", "src.js" ],
+  "jsnext:main": "index.es",
+  "files": [ "index.js", "index.es" ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "rollup -i src.js -f cjs -o index.js",
+    "start": "rollup -i index.es -f cjs -o index.js",
     "deploy": "git add . && git commit -am 'fix' && git push && npm publish"
   },
   "repository": {
