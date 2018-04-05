@@ -3,11 +3,8 @@
 * @author RubaXa <trash@rubaxa.org>
 * @license MIT
 */
-
+import {noop, isObject, assign, isFuction} from 'my-util';
 export default Promise;
-
-function noop() {}
-
 
 function _then(promise, method, callback) {
   return function () {
@@ -15,17 +12,7 @@ function _then(promise, method, callback) {
 
     /* istanbul ignore else */
     if (typeof callback === 'function') {
-      //try {
-        retVal = callback.apply(promise, args);
-      //} catch (err) {
-        /*if (DEBUG) {
-          console.error(err);
-          throw err;
-        }
-        promise.reject(err);
-        return;
-      }*/
-
+      retVal = callback.apply(promise, args);
       if (retVal && typeof retVal.then === 'function') {
         if (retVal.done && retVal.fail) {
           retVal.done(promise.resolve).fail(promise.reject);
@@ -54,7 +41,7 @@ function _then(promise, method, callback) {
  * @returns {Promise}
  */
 
-function Promise(executor, abort, progress) {
+function Promise(executor, abort, extended) {
   var _completed = false;
   var _args;
   var _doneFn = [];
@@ -102,17 +89,15 @@ function Promise(executor, abort, progress) {
       _doneFn = [];
       _failFn = [];
       _completed = true;
+      if (isFuction(abort)) {
+        abort(dfd);
+      }
     }, // jQuery support
-    progress: progress || noop, // jQuery support
+    progress: noop, // jQuery support
     promise: function () {
       // jQuery support
       return dfd;
     },
-
-    /**
-     * Событие по которому убиваем промис
-     */
-    ttl: ttl,
 
 
     /**
@@ -168,6 +153,10 @@ function Promise(executor, abort, progress) {
     }*/
   }
 
+  if (isObject(extended)) {
+    assign(dfd, extended);    
+  }
+
   return dfd;
 
   function _setState(state) {
@@ -206,7 +195,10 @@ function Promise(executor, abort, progress) {
         fn = fns[i];
         /* istanbul ignore else */
         if (typeof fn === 'function') {
-          fn.apply(dfd, _args);
+          var retVal = fn.apply(dfd, _args);
+          if (retVal !== undefined) {
+            _args[0] = retVal;
+          }
         }
       }
 
@@ -347,24 +339,3 @@ Promise.map = function (map) {
   });
 };
 
-/*
-  1. абортим xhr
-  2. костылим View.prototype.add - помойка вызываемая при деструкторе вьюхи
-  3. блокируем done/fail колбеки промиса
-*/
-function ttl(eventEmiter, eventName) {
-  var _this = this;
-  var XHR = this.XHR;
-  if (eventName === 'remove' && XHR) {
-    eventEmiter.add([{ remove }]);// View.prototype.add
-  } else {
-    eventEmiter.once(eventName, remove);
-  }
-  function remove() {
-    _this.abort();
-    if (XHR.status !== 200) {
-      XHR.abort();
-    }
-  }
-  return this;
-}
